@@ -161,6 +161,45 @@ const STANDALONE =
   window.navigator.standalone === true ||
   window.matchMedia?.("(display-mode: standalone)").matches === true;
 
+const INSTALL_HINT_KEY = "paperpal.installHintDismissed.v1";
+
+function setupInstallHint() {
+  const hint = document.getElementById("installHint");
+  if (!hint) return;
+  if (STANDALONE) {
+    hint.hidden = true;
+    return;
+  }
+  let dismissed = false;
+  try {
+    dismissed = localStorage.getItem(INSTALL_HINT_KEY) === "1";
+  } catch {
+    dismissed = false;
+  }
+  if (dismissed) return;
+
+  const text = document.getElementById("installHintText");
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || "");
+  if (text) {
+    text.textContent = isIOS
+      ? "点 Safari 底部「分享」→「添加到主屏幕」"
+      : "浏览器菜单里选「安装应用 / 添加到主屏幕」";
+  }
+
+  document.getElementById("installHintDismiss")?.addEventListener("click", () => {
+    hint.hidden = true;
+    try {
+      localStorage.setItem(INSTALL_HINT_KEY, "1");
+    } catch {
+      /* 忽略 */
+    }
+  });
+
+  window.setTimeout(() => {
+    hint.hidden = false;
+  }, 2400);
+}
+
 function hideSplash() {
   const splash = document.getElementById("appSplash");
   if (!splash) return;
@@ -196,6 +235,7 @@ async function init() {
   initializeBluetooth();
   renderDeviceRegistry();
   setAutoUi(false);
+  setupInstallHint();
 
   setTimeout(() => {
     if (!welcomeSpoken && currentRoute === "welcome" && !voice.screenReaderMode()) {

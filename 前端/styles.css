@@ -2293,3 +2293,24 @@ img, video, svg { -webkit-user-drag: none; }
 
 /* 已装到主屏幕（standalone）时隐藏“添加到主屏幕”类提示 */
 html.is-standalone .only-in-browser { display: none !important; }
+
+/* 安装到主屏幕的提示（已安装时自动隐藏） */
+.install-hint {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(142px + env(safe-area-inset-bottom));
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+}
+.install-hint-copy { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.install-hint-copy strong { font-size: 0.86rem; }
+.install-hint-copy span { font-size: 0.74rem; color: var(--muted); }
+html.is-standalone .install-hint { display: none !important; }

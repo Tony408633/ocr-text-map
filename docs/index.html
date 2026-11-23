@@ -12,6 +12,17 @@
   <meta name="apple-mobile-web-app-title" content="纸伴">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="format-detection" content="telephone=no">
+  <!-- splash:start -->
+  <link rel="apple-touch-startup-image" href="./splash/launch-430x932@3x.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-428x926@3x.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-414x896@2x.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-414x896@3x.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-393x852@3x.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-390x844@3x.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-375x812@3x.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-375x667@2x.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+  <link rel="apple-touch-startup-image" href="./splash/launch-320x568@2x.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- splash:end -->
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
@@ -965,6 +976,15 @@
         <svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span>设置</span>
       </button>
     </nav>
+
+    <!-- 未安装时的提示：装到主屏幕后自动隐藏 -->
+    <div id="installHint" class="install-hint" hidden>
+      <div class="install-hint-copy">
+        <strong>装到主屏幕，像 App 一样用</strong>
+        <span id="installHintText">点 Safari 底部「分享」→「添加到主屏幕」</span>
+      </div>
+      <button id="installHintDismiss" class="btn btn--ghost btn--sm" type="button">知道了</button>
+    </div>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden>
