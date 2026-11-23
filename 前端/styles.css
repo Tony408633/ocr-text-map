@@ -2218,7 +2218,8 @@ kbd {
 .device-item-copy span { font-size: 0.72rem; color: var(--muted); }
 .device-item .btn { min-height: 34px; padding: 5px 10px; font-size: 0.76rem; }
 .pair-guide h2 { font-size: 1rem; margin-bottom: 8px; }
-.pair-guide .btn { width: 100%; }
+.pair-guide > .btn { width: 100%; }
+.pairing-rename-row .btn { width: auto; flex: 0 0 auto; }
 
 /* --------------------------------------------------------------------------
    原生 App 手感：去掉浏览器的“网页痕迹”
@@ -2314,3 +2315,67 @@ html.is-standalone .only-in-browser { display: none !important; }
 .install-hint-copy strong { font-size: 0.86rem; }
 .install-hint-copy span { font-size: 0.74rem; color: var(--muted); }
 html.is-standalone .install-hint { display: none !important; }
+
+/* 系统配对：三步流程 */
+.pairing-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  background: var(--jade-soft);
+  color: var(--jade-ink);
+  white-space: nowrap;
+}
+.pairing-state::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--jade);
+  animation: pairing-pulse 1.2s ease-in-out infinite;
+}
+@keyframes pairing-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pairing-state::before { animation: none; opacity: 1; }
+}
+.pair-guide.is-pairing {
+  border-color: color-mix(in srgb, var(--jade) 45%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--jade) 12%, transparent);
+}
+.pair-guide #pairSteps li.is-active > span {
+  background: var(--jade);
+  color: #fff;
+  border-color: var(--jade);
+}
+.pair-guide #pairSteps li.is-done > span {
+  background: var(--jade-soft);
+  color: var(--jade-ink);
+  border-color: color-mix(in srgb, var(--jade) 35%, transparent);
+}
+.pair-guide #pairSteps li.is-done strong::after {
+  content: " ✓";
+  color: var(--jade);
+}
+.pairing-rename {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+.pairing-rename label { font-size: 0.78rem; color: var(--muted); }
+.pairing-rename-row { display: flex; gap: 8px; align-items: center; }
+.pairing-rename-row input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+.pairing-rename-row .btn { flex: 0 0 auto; min-height: 44px; }

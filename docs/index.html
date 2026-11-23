@@ -825,14 +825,33 @@
         </div>
 
         <div class="card pair-guide" id="pairGuideCard">
-          <h2 id="pairGuideTitle">系统配对：耳机 / 翻页器这样连</h2>
+          <div class="bench-head">
+            <h2 id="pairGuideTitle">系统配对：耳机 / 翻页器这样连</h2>
+            <span id="pairingState" class="pairing-state" hidden>侦测中</span>
+          </div>
           <ol class="step-list step-list--flat" id="pairSteps">
-            <li><span>1</span><div><strong>在系统里配对</strong><p>手机：设置 → 蓝牙；电脑：设置 → 蓝牙和设备。让设备进入配对模式，选中它。</p></div></li>
-            <li><span>2</span><div><strong>回来按一下设备上的按键</strong><p>纸伴听到按键就会自动登记，不用在网页里找设备。</p></div></li>
-            <li><span>3</span><div><strong>给它起个名字</strong><p>比如“我的耳机”“桌上的翻页器”，之后所有提示都用这个名字。</p></div></li>
+            <li id="pairStep1">
+              <span>1</span>
+              <div><strong>在系统里配对</strong><p id="pairStep1Text">手机：设置 → 蓝牙；电脑：设置 → 蓝牙和设备。让设备进入配对模式，选中它。</p></div>
+            </li>
+            <li id="pairStep2">
+              <span>2</span>
+              <div><strong>回来按一下设备上的按键</strong><p>纸伴听到按键就会自动登记，不用在网页里找设备。</p></div>
+            </li>
+            <li id="pairStep3">
+              <span>3</span>
+              <div><strong>给它起个名字</strong><p>比如“我的耳机”“桌上的翻页器”，之后所有提示都用这个名字。</p></div>
+            </li>
           </ol>
-          <button class="btn btn--primary" type="button" data-action="start-pairing">我在系统里配对好了，开始侦测按键</button>
-          <p id="pairingHint" class="fineprint" aria-live="polite"></p>
+          <button id="pairingBtn" class="btn btn--primary" type="button" data-action="start-pairing">我在系统里配对好了，开始侦测按键</button>
+          <div id="pairingRename" class="pairing-rename" hidden>
+            <label for="pairingName">给刚识别的设备起个名字</label>
+            <div class="pairing-rename-row">
+              <input id="pairingName" type="text" maxlength="40" autocomplete="off" placeholder="例如：我的耳机">
+              <button class="btn btn--secondary" type="button" data-action="pairing-save-name">保存名字</button>
+            </div>
+          </div>
+          <p id="pairingHint" class="fineprint" aria-live="polite">第 1 步在系统设置里完成，完成后点下面的按钮。</p>
         </div>
 
         <div class="device-status card">

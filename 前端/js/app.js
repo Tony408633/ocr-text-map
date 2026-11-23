@@ -118,6 +118,9 @@ let autoScanOn = false;
 let autoScanPage = null;
 let autoScanLastAction = "";
 let pairingWatch = 0;
+
+/* 配对会话：idle（未开始）→ waiting（等待按键）→ rename（已登记待改名）→ done */
+const pairing = { phase: "idle", timer: null, deviceId: null };
 let autoBadgeTimer = null;
 let readingDisplay = null;
 let readingDisplayKey = "";
@@ -2842,6 +2845,12 @@ function updateDeviceUI() {
   updateBluetoothUI();
   renderInputLog();
   renderDeviceRegistry();
+  updatePairingUI();
+  const step1 = document.querySelector('#pairStep1Text');
+  if (step1 && !step1.dataset.ready) {
+    step1.textContent = pairingStepOneText();
+    step1.dataset.ready = '1';
+  }
   const guideTitle = $("#pairGuideTitle");
   if (guideTitle) {
     guideTitle.textContent = status.platform.ios
@@ -2870,10 +2879,11 @@ function updateMediaUI(status = input.status()) {
   const enableBtn = $("#mediaEnableBtn");
   const disableBtn = $("#mediaDisableBtn");
   if (stateEl) {
+    const nickname = devices.latest("headphone")?.nickname || "";
     stateEl.textContent = enabled
       ? status.media.playing
-        ? "耳机按键已启用 · 正在播放"
-        : "耳机按键已启用"
+        ? `耳机按键已启用${nickname ? ` · ${nickname}` : ""} · 正在播放`
+        : `耳机按键已启用${nickname ? ` · ${nickname}` : ""}`
       : supported
         ? "耳机按键未启用"
         : "这个浏览器不支持耳机媒体键";
@@ -2908,6 +2918,7 @@ function renderInputLog() {
   entries.forEach((entry, index) => {
     const time = new Date(entry.at);
     const stamp = `${String(time.getHours()).padStart(2, "0")}:${String(time.getMinutes()).padStart(2, "0")}:${String(time.getSeconds()).padStart(2, "0")}`;
+    const nickname = deviceNicknameFor(entry.source, entry.label);
     list.append(
       el(
         "li",
@@ -2915,7 +2926,10 @@ function renderInputLog() {
           class: `input-log-item${index === 0 ? " is-latest" : ""}`,
           dataset: { source: entry.source },
         },
-        el("span", { class: "log-source", text: entry.source }),
+        el("span", {
+          class: "log-source",
+          text: nickname ? `${entry.source} · ${nickname}` : entry.source,
+        }),
         el("span", { class: "log-label", text: entry.label }),
         entry.detail ? el("span", { class: "log-detail", text: entry.detail }) : null,
         el("time", { class: "log-time", text: stamp, datetime: time.toISOString() })
@@ -2950,32 +2964,59 @@ function noteDevice(kind, name = "", source = "") {
   }
   renderDeviceRegistry();
   const device = result.device;
+
+  if (pairing.phase === "waiting") {
+    // 配对会话中：登记 → 进入“起名字”这一步
+    window.clearTimeout(pairing.timer);
+    pairing.timer = null;
+    pairing.deviceId = device.id;
+    pairing.phase = "rename";
+    const field = $("#pairingName");
+    if (field) field.value = device.nickname;
+    updatePairingUI();
+    const hint = $("#pairingHint");
+    if (hint) {
+      hint.textContent = `已登记：${device.nickname}。给它改个名字，或直接用这个名字。`;
+    }
+    announce(
+      `收到按键，已登记为${device.nickname}。可以点“保存名字”，或直接用这个名字。`,
+      { interrupt: true }
+    );
+    toast(`已识别：${device.nickname}`, { iconName: devices.KIND_ICONS[kind] || "bluetooth" });
+    return device;
+  }
+
   if (result.created) {
-    // 只在设备页或"正在配对"时出声，避免阅读过程中打断朗读
-    const shouldTell = currentRoute === "devices" || Boolean(pairingWatch);
-    const extra = pairingWatch ? "配对成功，" : "";
-    if (shouldTell) {
-      announce(`${extra}已识别到${device.nickname}。可以在设备页给它改个名字。`, {
-        interrupt: true,
-      });
-      toast(`${extra}已识别：${device.nickname}`, {
+    // 只在设备页出声，避免阅读过程中打断朗读
+    if (currentRoute === "devices") {
+      announce(`已识别到${device.nickname}。可以在设备页给它改个名字。`, { interrupt: true });
+      toast(`已识别：${device.nickname}`, {
         iconName: devices.KIND_ICONS[kind] || "bluetooth",
       });
     }
-    pairingWatch = 0;
-    const hint = $("#pairingHint");
-    if (hint) hint.textContent = `已登记：${device.nickname}。按“改名”可以换成你习惯的叫法。`;
   }
   return device;
 }
 
 function deviceKindFor(source, label = "") {
   if (source === "media") return "headphone";
+  if (/耳机|媒体/.test(String(source))) return "headphone";
   if (source === "gamepad") return "gamepad";
   if (source === "ble") return "ble";
   if (source === "hold") return "remote";
   if (/Page Up|Page Down|耳机|媒体/.test(String(label))) return "remote";
   return "keyboard";
+}
+
+function deviceNicknameFor(source = "", label = "") {
+  let kind = "";
+  if (/耳机|媒体/.test(source)) kind = "headphone";
+  else if (/手柄/.test(source)) kind = "gamepad";
+  else if (/蓝牙/.test(source)) kind = "ble";
+  else if (/键盘/.test(source)) kind = /Page Up|Page Down|耳机|媒体/.test(label) ? "remote" : "keyboard";
+  if (!kind) return "";
+  const device = devices.latest(kind) || (kind === "keyboard" ? devices.latest("remote") : null);
+  return device?.nickname || "";
 }
 
 function relativeTime(timestamp) {
@@ -3526,23 +3567,113 @@ async function copyTroubleshoot() {
 /* 设备配对                                                                    */
 /* -------------------------------------------------------------------------- */
 
-function startPairing() {
-  pairingWatch = Date.now();
+function setPairingPhase(phase, { keepDevice = false } = {}) {
+  pairing.phase = phase;
+  if (!keepDevice && phase === "waiting") pairing.deviceId = null;
+  updatePairingUI();
+}
+
+function updatePairingUI() {
+  const phase = pairing.phase;
+  const waiting = phase === "waiting";
+  const state = $("#pairingState");
+  const button = $("#pairingBtn");
+  const rename = $("#pairingRename");
+  const step2 = $("#pairStep2");
+  const step3 = $("#pairStep3");
+
+  if (state) {
+    state.hidden = !waiting;
+    state.textContent = "侦测中…";
+  }
+  if (button) {
+    button.textContent = waiting
+      ? "取消侦测"
+      : phase === "rename" || phase === "done"
+        ? "再侦测一次"
+        : "我在系统里配对好了，开始侦测按键";
+  }
+  if (rename) rename.hidden = phase !== "rename";
+  step2?.classList.toggle("is-active", waiting);
+  step2?.classList.toggle("is-done", phase === "rename" || phase === "done");
+  step3?.classList.toggle("is-active", phase === "rename");
+  step3?.classList.toggle("is-done", phase === "done");
+  $("#pairGuideCard")?.classList.toggle("is-pairing", waiting);
+}
+
+function pairingStepOneText() {
   const platform = input.platform();
-  const message = platform.ios
-    ? "现在按一下已经配对好的耳机或翻页器上的按键，比如播放暂停键，我会立刻登记它。"
-    : "现在按一下设备上的按键，我会立刻登记它。";
+  if (platform.ios) return "手机：设置 → 蓝牙 → 选中你的耳机 / 翻页器（耳机打开盖子就会出现在列表里）。";
+  if (platform.android) return "手机：设置 → 已连接的设备 → 配对新设备 → 选中你的耳机 / 翻页器。";
+  return "电脑：设置 → 蓝牙和设备 → 添加设备 → 蓝牙 → 选中你的耳机 / 翻页器。";
+}
+
+async function startPairing() {
+  if (pairing.phase === "waiting") {
+    stopPairing("已取消侦测。");
+    return;
+  }
+  window.clearTimeout(pairing.timer);
+  pairing.deviceId = null;
+  setPairingPhase("waiting");
+
+  const step1 = $("#pairStep1Text");
+  if (step1) step1.textContent = pairingStepOneText();
   const hint = $("#pairingHint");
-  if (hint) hint.textContent = message;
-  toast(message, { iconName: "bluetooth", duration: 7000 });
-  announce(message, { interrupt: true });
-  window.setTimeout(() => {
-    if (!pairingWatch) return;
-    const still = $("#pairingHint");
-    if (still) still.textContent = "还没有收到按键。检查设备是否已配对、是否开机，再按一次。";
-    announce("还没有收到按键。检查设备是否已配对并开机，再按一次。", { interrupt: true });
-    pairingWatch = 0;
-  }, 22000);
+  if (hint) hint.textContent = "正在侦测…请按一下设备上的按键（耳机按播放 / 暂停键）。";
+
+  // 耳机按键依赖媒体会话；这里正好是用户点击手势，顺手启用
+  if (!input.mediaEnabled()) {
+    await input.enableMediaControls();
+    updateMediaUI();
+  }
+
+  announce("开始侦测。请按一下设备上的按键；如果是耳机，按播放暂停键。", { interrupt: true });
+  toast("正在侦测按键，请按一下你的设备。", { iconName: "bluetooth", duration: 6000 });
+
+  pairing.timer = window.setTimeout(() => {
+    if (pairing.phase !== "waiting") return;
+    stopPairing("还没有收到按键：确认设备已配对、已开机，再按一次试试。");
+  }, 45000);
+}
+
+function stopPairing(message = "已停止侦测。") {
+  window.clearTimeout(pairing.timer);
+  pairing.timer = null;
+  if (pairing.phase === "waiting") {
+    pairing.phase = pairing.deviceId ? "rename" : "idle";
+  }
+  updatePairingUI();
+  const hint = $("#pairingHint");
+  if (hint && message) hint.textContent = message;
+  if (message) {
+    toast(message, { iconName: pairing.deviceId ? "check" : "bluetooth" });
+    announce(message);
+  }
+}
+
+function focusPairingName() {
+  const field = $("#pairingName");
+  if (!field) return;
+  const device = devices.get(pairing.deviceId || "");
+  if (device && document.activeElement !== field) field.value = device.nickname;
+  field.focus({ preventScroll: true });
+  field.select?.();
+}
+
+function savePairingName() {
+  if (!pairing.deviceId) return;
+  const field = $("#pairingName");
+  const value = field?.value.trim() || "";
+  const device = value ? devices.rename(pairing.deviceId, value) : devices.get(pairing.deviceId);
+  const nickname = device?.nickname || value || "这个设备";
+  renderDeviceRegistry();
+  pairing.phase = "done";
+  updatePairingUI();
+  const hint = $("#pairingHint");
+  if (hint) hint.textContent = `已保存：${nickname}。之后所有提示都用这个名字。`;
+  toast(`设备名字：${nickname}`, { iconName: "check" });
+  announce(`好，就叫${nickname}。现在按它的按键试试。`, { interrupt: true });
 }
 
 /* -------------------------------------------------------------------------- */
@@ -4401,7 +4532,10 @@ async function handleAction(action, element) {
       await saveAccessToken();
       return;
     case "start-pairing":
-      startPairing();
+      await startPairing();
+      return;
+    case "pairing-save-name":
+      savePairingName();
       return;
     case "device-rename":
       await renameDevice(element?.dataset?.id || "");

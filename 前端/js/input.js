@@ -244,7 +244,9 @@ function handleKeydown(event) {
   }
 
   if (!action) return;
-  if (action === "toggle" && onControl(event.target)) return; // 让空格正常激活按钮
+  // 只有空格要让给聚焦中的按钮；媒体键（耳机播放/暂停）必须照常交给纸伴
+  const spaceOnControl = onControl(event.target) && (key === " " || key === "Spacebar");
+  if (spaceOnControl) return;
   event.preventDefault();
   if (state.heldAction !== action) startHold(action);
   emit(action, source, `${describeKey(event)}（${ACTION_LABELS[action] || action}）`);
