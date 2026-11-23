@@ -26,6 +26,27 @@
 
 要求：Mac + Xcode 15/16 + 一个 Apple ID（免费签名 7 天）。完整步骤、三种连接方式、权限配置、排期与演示脚本见 **[ios/README.md](ios/README.md)**。
 
+## 发布到 GitHub Pages（界面演示站）
+
+`docs/` 是从 `前端/` 生成的**静态演示站**：资源路径已改成相对路径（适配 `https://<user>.github.io/<repo>/`），
+没有后端时自动进入离线模式并载入演示书籍，点首页「继续上次阅读」即可看到逐行朗读界面。
+
+重新生成（改了前端之后）：
+
+```powershell
+python tools\build_pages.py
+```
+
+Fork + 推送 + 开启 Pages（一条命令，需要 GitHub token，勾选 `public_repo` 即可）：
+
+```powershell
+.\tools\publish_to_github.ps1 -Token ghp_你的token
+# 或者：$env:GITHUB_TOKEN="ghp_..."; .\tools\publish_to_github.ps1 -Token $env:GITHUB_TOKEN
+```
+
+脚本会：fork `Livia-W/ocr-text-map` → 把本项目 force 推到 `main` → 把 Pages 源设为 `main /docs` → 打印网址。
+
+
 
 ## 桌面 App 窗口（推荐演示）
 
