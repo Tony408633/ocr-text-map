@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "纸伴 · 桌面 App",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/run_app.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/后端"
+      },
+      "justMyCode": false
+    },
+    {
+      "name": "纸伴 · 网页服务",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "paperpal",
+      "args": ["serve", "--host", "127.0.0.1", "--port", "8000"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/后端",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/后端"
+      },
+      "justMyCode": false
+    }
+  ]
+}

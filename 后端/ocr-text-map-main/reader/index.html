@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123b36">
+  <meta name="description" content="纸伴：陪伴全盲用户体验纸书阅读的语音优先网页应用原型。">
+  <link rel="manifest" href="/reader-assets/manifest.webmanifest">
+  <link rel="stylesheet" href="/reader-assets/styles.css">
+  <title>纸伴 · 陪你读书</title>
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要内容</a>
+  <header class="topbar">
+    <div class="brand" aria-label="纸伴，陪你读书"><span class="brand-mark" aria-hidden="true">纸</span><span>纸伴</span></div>
+    <div class="top-actions"><button id="listenCommand" class="listen-button" aria-label="按下后说出语音指令">听我说</button><button id="helpBtn" class="icon-button" aria-label="重复当前提示" title="重复提示">?</button></div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section id="welcome" class="screen active" aria-labelledby="welcomeTitle">
+      <div class="eyebrow">免费 · 语音陪伴</div>
+      <h1 id="welcomeTitle">你好，我是纸伴。</h1>
+      <p class="lead">把 iPhone 固定在书页上方，用语音或实体按键逐行阅读，并把想法记在对应的书、页和行。</p>
+      <div class="voice-card" aria-live="polite">
+        <span class="pulse" aria-hidden="true"></span>
+        <div><strong id="assistantStatus">语音助手已准备好</strong><p id="assistantLine">选择一种开始方式。</p></div>
+      </div>
+      <button class="primary big" data-action="guided">开始扫描新页面</button>
+      <button class="secondary big" data-action="continue-reading">继续上次阅读</button>
+      <button class="secondary big" data-action="annotations">查找我的批注</button>
+      <button class="text-button" data-action="devices">蓝牙按钮与手势</button>
+      <p class="small-note">页面会朗读提示。首次使用相机或麦克风时，iPhone 会询问授权。</p>
+    </section>
+
+    <section id="setup" class="screen" aria-labelledby="setupTitle" hidden>
+      <div class="step">第一步 · 准备书本</div>
+      <h1 id="setupTitle">请把手机固定好</h1>
+      <p class="lead">镜头朝下并固定手机，让整页进入画面。翻页和摆书由你完成。准备好后开始检查。</p>
+      <div class="voice-card" aria-live="polite"><span class="pulse" aria-hidden="true"></span><div><strong>我在这里陪你</strong><p>需要再听一次，可以说“重复提示”。</p></div></div>
+      <button class="primary big" data-action="open-camera">我准备好了，检查画面</button>
+      <button class="secondary big" data-action="demo-scan">先体验演示阅读</button>
+      <button class="text-button" data-action="back">返回</button>
+    </section>
+
+    <section id="scan" class="screen" aria-labelledby="scanTitle" hidden>
+      <div class="step">第二步 · 页面检查</div>
+      <h1 id="scanTitle">正在查看书页</h1>
+      <p class="lead" id="scanHint">请保持手机稳定。拍摄的页面只在本机预览。</p>
+      <div class="camera-frame" id="cameraFrame">
+        <video id="camera" autoplay playsinline muted aria-label="书页摄像头画面"></video>
+        <div id="cameraPlaceholder" class="camera-placeholder"><span aria-hidden="true">▧</span><p>相机画面将在这里显示</p></div>
+      </div>
+      <div id="cameraMessage" class="status-line" role="status">等待开启相机</div>
+      <label class="secondary big" for="pagePhoto">从相册选择书页照片</label>
+      <input id="pagePhoto" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+      <label class="small-note" for="bookName">书名</label><input id="bookName" type="text" value="我的书" aria-label="书名">
+      <label class="small-note" for="pageNumber">页码</label><input id="pageNumber" type="number" min="1" value="1" aria-label="页码">
+      <button class="secondary big" data-action="capture">拍下当前书页并识别</button>
+      <button class="primary big" data-action="capture">检查并继续</button>
+      <button class="primary big" data-action="recognize-file">识别所选照片</button>
+      <button class="secondary big" data-action="demo-scan">使用演示内容继续</button>
+      <button class="text-button" data-action="back">返回</button>
+    </section>
+
+    <section id="reading" class="screen" aria-labelledby="readingTitle" hidden>
+      <div class="step" id="pageLabel">第三步 · 阅读</div>
+      <h1 id="readingTitle">纸书阅读</h1>
+      <div class="voice-card reading-status" aria-live="polite"><span class="pulse" aria-hidden="true"></span><div><strong id="readStatus">等待开始朗读</strong><p id="readLine">你可以按按钮，也可以说“开始朗读”。</p></div></div>
+      <div class="reading-meta" aria-live="polite"><span id="bookLabel">示例书籍</span><span id="lineLabel">第 1 / 6 行</span></div>
+      <article class="text-panel" aria-label="当前行和页面演示文字">
+        <div class="panel-label">当前行 <span id="demoLabel">演示内容 · OCR 未接入</span></div>
+        <p id="bookText">读书使人充实。</p>
+      </article>
+      <div class="controls">
+        <button class="secondary" data-action="previous" aria-label="上一行">上一行</button>
+        <button id="playBtn" class="primary" data-action="speak">朗读本行</button>
+        <button class="secondary" data-action="next" aria-label="下一行">下一行</button>
+      </div>
+      <div class="device-strip"><span id="deviceStatus">阅读按钮未连接</span><button class="text-button" data-action="devices">设备与手势设置</button></div>
+      <button class="primary big annotation-action" data-action="annotate">添加批注</button>
+      <button class="secondary big" data-action="annotations">查找已保存的批注</button>
+      <button class="secondary big" data-action="new-page">扫描下一页</button>
+      <details class="gesture-help"><summary>语音和操作说明</summary><p>可说：朗读本行、暂停、继续、上一行、下一行、添加批注、查找批注、重复提示、返回。蓝牙和手势目前为交互演示，未连接真实设备。</p></details>
+    </section>
+
+    <section id="annotate" class="screen" aria-labelledby="annotateTitle" hidden>
+      <div class="step">批注</div>
+      <h1 id="annotateTitle">请说出你的批注</h1>
+      <p class="lead">选择批注范围后说出内容。保存前我会回读范围和文字，确认后再存入本机。</p>
+      <div class="scope-choice" role="group" aria-label="批注范围">
+        <button class="secondary scope-option selected" data-scope="line" aria-pressed="true">当前第 1 行</button>
+        <button class="secondary scope-option" data-scope="page" aria-pressed="false">整页</button>
+      </div>
+      <div class="voice-card" aria-live="polite"><span class="pulse" aria-hidden="true"></span><div><strong id="recordStatus">准备聆听</strong><p id="recordHint">按“开始说话”，说完后保存。</p></div></div>
+      <label class="field-label" for="annotationText">批注内容</label>
+      <textarea id="annotationText" rows="5" placeholder="批注会显示在这里" autocomplete="off"></textarea>
+      <button class="primary big" data-action="listen-note">开始说话</button>
+      <button class="secondary big" data-action="save-note">确认并保存</button>
+      <button class="text-button" data-action="cancel-note">取消</button>
+    </section>
+
+    <section id="annotations" class="screen" aria-labelledby="annotationsTitle" hidden>
+      <div class="step">我的阅读记录</div>
+      <h1 id="annotationsTitle">已保存的批注</h1>
+      <p class="lead">按书籍、页码和范围浏览。可以回听、补充或编辑批注。</p>
+      <label class="field-label" for="noteFilter">筛选书名或页码</label>
+      <input id="noteFilter" type="search" placeholder="例如：示例书籍 或 第 12 页" autocomplete="off">
+      <div id="annotationList" class="annotation-list" aria-live="polite"></div>
+      <button class="primary big" data-action="back-reading">返回阅读</button>
+    </section>
+
+    <section id="devices" class="screen" aria-labelledby="devicesTitle" hidden>
+      <div class="step">输入方式</div><h1 id="devicesTitle">蓝牙按钮与手势</h1>
+      <div class="voice-card"><span class="pulse" aria-hidden="true"></span><div><strong id="bleState">尚未连接</strong><p>此网页原型只演示连接与按键反馈；iOS Safari 网页不能连接自定义 BLE 外设。</p></div></div>
+      <button class="primary big" data-action="connect-demo">演示连接阅读按钮</button>
+      <button class="secondary big" data-action="test-left">测试左键：上一行</button>
+      <button class="secondary big" data-action="test-right">测试右键：下一行</button>
+      <button class="secondary big" data-action="test-center">测试中键：暂停/继续</button>
+      <h2>建议的默认映射</h2><ul class="mapping-list"><li>左键短按：上一行</li><li>右键短按：下一行</li><li>中键短按：暂停 / 继续</li><li>中键长按：开始 / 结束批注</li></ul>
+      <h2>手势状态</h2><p id="gestureStatus" class="status-line">等待手势输入。此版本尚未启用实时手部识别。</p>
+      <button class="secondary big" data-action="gesture-demo">演示唤醒批注</button>
+      <button class="primary big" data-action="back-reading">返回</button>
+    </section>
+
+    <section id="settings" class="screen" aria-labelledby="settingsTitle" hidden>
+      <div class="step">设置</div><h1 id="settingsTitle">语音与隐私</h1>
+      <p class="lead">纸伴在本机演示语音提示和批注。相机内容不会上传。</p>
+      <button class="secondary big" data-action="toggle-voice">切换语音提示</button>
+      <button class="secondary big" data-action="clear-notes">清除所有批注</button>
+      <button class="primary big" data-action="back-reading">返回阅读</button>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="主要页面">
+    <button data-action="home" aria-label="首页">首页</button>
+    <button data-action="nav-reading" aria-label="阅读">阅读</button>
+    <button data-action="annotations" aria-label="批注">批注</button>
+    <button data-action="settings" aria-label="设置">设置</button>
+  </nav>
+  <div id="toast" class="sr-only" role="status" aria-live="assertive"></div>
+    <script src="/reader-assets/app.js" defer></script>
+</body>
+</html>

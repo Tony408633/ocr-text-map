@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f2ea" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1613" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="纸伴：陪你看纸书的语音阅读伙伴。扫描书页、逐行朗读、记录批注，全部在本机处理。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="纸伴">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="/app-assets/icon-180.png">
+  <link rel="stylesheet" href="/app-assets/styles.css">
+  <title>纸伴 · 陪你读书</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.6V21h13V9.6"/><path d="M9.8 21v-6.2h4.4V21"/></symbol>
+    <symbol id="i-library" viewBox="0 0 24 24"><path d="M4 4h4v16H4z"/><path d="M10 4h4v16h-4z"/><path d="m16.2 5.4 3.8 1-3 14.6-3.8-1z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4.5h9.5A2.5 2.5 0 0 1 17 7v13H7.5A2.5 2.5 0 0 1 5 17.5z"/><path d="M5 17.5A2.5 2.5 0 0 1 7.5 15H17"/></symbol>
+    <symbol id="i-book-open" viewBox="0 0 24 24"><path d="M12 6.4C10.4 4.9 7.8 4.3 4 4.4V19c3.8-.1 6.4.5 8 2 1.6-1.5 4.2-2.1 8-2V4.4c-3.8-.1-6.4.5-8 2Z"/><path d="M12 6.4V21"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.6 3.6a2.1 2.1 0 0 1 3 3L7 19.2 3 20.3l1.1-4z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h9"/><path d="M17 6h3"/><path d="M4 12h3"/><path d="M11 12h9"/><path d="M4 18h7"/><path d="M15 18h5"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="13" cy="18" r="2"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.4"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.2v13.6L19 12z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8.5 5h3v14h-3zM12.5 5h3v14h-3z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/><path d="M8.5 21h7"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3L12 5v14l-5-4.5H4z"/><path d="M15.5 9a4.3 4.3 0 0 1 0 6"/><path d="M18 6.5a8 8 0 0 1 0 11"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m14.5 5-7 7 7 7"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9.5 5 7 7-7 7"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M20 12H4"/><path d="m10 6-6 6 6 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.4 15.4 4.4 4.4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v5M14 11v5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 5.5l4 4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 6.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 8 5-5 5 5"/><path d="M4 20h16"/></symbol>
+    <symbol id="i-bluetooth" viewBox="0 0 24 24"><path d="m7 7 10 10-5 4V3l5 4L7 17"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="13.5" width="4" height="7" rx="1.6"/><rect x="17.5" y="13.5" width="4" height="7" rx="1.6"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18l-1.8-5.4L4.7 10.8 10.2 9z"/><path d="M18.5 16.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M8.6 11.4a8.4 8.4 0 0 1 6.8.6"/><path d="M5.4 8.2a13 13 0 0 1 5-2.3"/><path d="M17.9 6.6a13.2 13.2 0 0 1 1.7 1.6"/><path d="M12 18.5h.01"/><path d="M10.2 15.2a3 3 0 0 1 3.6.4"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path d="M7 12h10"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5h.01"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.3l3.4 2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M6 13.5h.01M9.5 13.5h.01M13 13.5h.01M16.5 13.5h.01M8 17h8"/></symbol>
+    <symbol id="i-gamepad" viewBox="0 0 24 24"><path d="M7 8h10a5 5 0 0 1 4.7 3.3l1 3A3 3 0 0 1 18 18l-2.5-2h-7L6 18a3 3 0 0 1-4.7-3.7l1-3A5 5 0 0 1 7 8Z"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="16" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="18" cy="13.5" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 10.5V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 10.5V6a1.5 1.5 0 0 1 3 0v7"/><path d="M17 9.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-2.5a6 6 0 0 1-4.8-2.4L4 15a1.7 1.7 0 0 1 2.7-2L8 14.5"/></symbol>
+    <symbol id="i-spinner" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <header class="app-bar">
+      <a class="brand" href="#/welcome" aria-label="纸伴首页">
+        <span class="brand-mark" aria-hidden="true">纸</span>
+        <span class="brand-text"><span class="brand-name">纸伴</span><span class="brand-sub">PaperPal</span></span>
+      </a>
+      <div class="app-bar-actions">
+        <span id="serverChip" class="chip chip--status" role="status"><span class="chip-dot" aria-hidden="true"></span><span id="serverChipText">连接中</span></span>
+        <button id="listenCommand" class="icon-btn" type="button" aria-label="听我说：按下后说出语音指令">
+          <svg class="icon" aria-hidden="true"><use href="#i-mic"/></svg>
+        </button>
+        <button id="helpBtn" class="icon-btn icon-btn--quiet" type="button" aria-label="重复当前提示" title="重复当前提示">
+          <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="offlineBanner" class="banner banner--warn" hidden>
+      <svg class="icon" aria-hidden="true"><use href="#i-wifi-off"/></svg>
+      <span>离线模式：批注会先存到本机，联网后自动同步。</span>
+    </div>
+
+    <main id="main" tabindex="-1">
+      <!-- 首页 -->
+      <section id="screen-welcome" class="screen" data-route="welcome" aria-labelledby="welcomeTitle" hidden>
+        <div class="hero">
+          <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span>语音优先 · 免费 · 本机处理</p>
+          <h1 id="welcomeTitle">你好，<br>我是纸伴。</h1>
+          <p class="lead">把手机固定在书页上方，我陪你逐行朗读，并把想法记在对应的书、页和行。</p>
+        </div>
+
+        <button id="resumeCard" class="resume-card" type="button" hidden>
+          <span id="resumeCover" class="cover cover--sm" aria-hidden="true">书</span>
+          <span class="resume-copy">
+            <span class="resume-kicker">继续上次阅读</span>
+            <strong id="resumeTitle">示例书籍</strong>
+            <span id="resumeMeta" class="muted">第 12 页 · 第 3 行</span>
+          </span>
+          <svg class="icon resume-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+        </button>
+
+        <div class="voice-card" aria-live="off">
+          <span class="pulse" aria-hidden="true"></span>
+          <div class="voice-copy">
+            <strong id="assistantStatus">我在听</strong>
+            <p id="assistantLine">选择一种交互方式，我带你开始扫描。</p>
+          </div>
+        </div>
+
+        <div class="mode-grid" role="radiogroup" aria-label="选择交互模式">
+          <button class="mode-card" type="button" role="radio" aria-checked="true" data-mode="guided">
+            <span class="mode-icon"><svg class="icon" aria-hidden="true"><use href="#i-hand"/></svg></span>
+            <span class="mode-title">语音引导</span>
+            <span class="mode-desc">我一步一步提示，你放书、翻页，说“好了”我就继续。点此开始。</span>
+            <span class="mode-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+          </button>
+          <button class="mode-card" type="button" role="radio" aria-checked="false" data-mode="command">
+            <span class="mode-icon"><svg class="icon" aria-hidden="true"><use href="#i-mic"/></svg></span>
+            <span class="mode-title">语音指令</span>
+            <span class="mode-desc">你说“开始扫描”“下一行”“添加批注”，我立即执行。点此开始。</span>
+            <span class="mode-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+          </button>
+        </div>
+
+        <div class="stat-strip" aria-label="阅读统计">
+          <div class="stat"><strong id="statPages">0</strong><span>扫描页</span></div>
+          <div class="stat"><strong id="statNotes">0</strong><span>条批注</span></div>
+          <div class="stat"><strong id="statStreak">0</strong><span>天连续</span></div>
+          <div class="stat"><strong id="statMinutes">0</strong><span>分钟</span></div>
+        </div>
+
+        <div class="quick-links">
+          <button class="nav-row" type="button" data-action="open-phone">
+            <span class="nav-row-icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+            <span class="nav-row-copy"><strong>用手机打开</strong><span>扫码连到这台电脑；相机扫描需要 HTTPS</span></span>
+            <svg class="icon nav-row-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+          <button class="nav-row" type="button" data-action="open-devices">
+            <span class="nav-row-icon"><svg class="icon" aria-hidden="true"><use href="#i-headphones"/></svg></span>
+            <span class="nav-row-copy"><strong>测试蓝牙耳机 / 翻页器</strong><span>按键测试台会实时显示收到的按键</span></span>
+            <svg class="icon nav-row-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+        </div>
+
+        <p class="fineprint">页面照片只交给本机 OCR 服务识别，不上传到云端。批注保存在本机数据库，可随时导出备份。</p>
+      </section>
+
+      <!-- 书架 -->
+      <section id="screen-library" class="screen" data-route="library" aria-labelledby="libraryTitle" hidden>
+        <div class="screen-head">
+          <div>
+            <p class="step-chip">书架</p>
+            <h1 id="libraryTitle">我的书</h1>
+            <p class="lead" id="libraryLead" aria-live="polite">扫描过的书页会自动归到书名下。</p>
+          </div>
+          <button class="btn btn--secondary btn--icon" type="button" data-action="add-book" aria-label="添加书籍">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+          </button>
+        </div>
+
+        <div class="search-field">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <input id="librarySearch" type="search" placeholder="搜索书名或作者" aria-label="搜索书架" autocomplete="off">
+        </div>
+
+        <div id="libraryList" class="book-list"></div>
+
+        <div id="libraryEmpty" class="empty-state" hidden>
+          <span class="empty-icon" aria-hidden="true"><svg class="icon"><use href="#i-library"/></svg></span>
+          <h2>书架还是空的</h2>
+          <p>扫描一页书，或者先看看演示内容。</p>
+          <button class="btn btn--primary" type="button" data-action="start-scan">扫描第一页</button>
+          <button class="btn btn--ghost" type="button" data-action="demo-book">加入演示书籍</button>
+        </div>
+      </section>
+
+      <!-- 准备 -->
+      <section id="screen-setup" class="screen" data-route="setup" aria-labelledby="setupTitle" hidden>
+        <p class="step-chip">第一步 · 准备</p>
+        <h1 id="setupTitle">把手机和书摆好</h1>
+        <p class="lead">镜头朝下，让整页书进入画面。放书、翻页由你完成，我只负责看清和朗读。</p>
+
+        <div class="setup-figure" role="img" aria-label="示意图：手机固定在书页上方，两页书完整进入取景框">
+          <svg viewBox="0 0 320 240" aria-hidden="true">
+            <rect x="20" y="150" width="280" height="70" rx="10" fill="var(--setup-paper)" stroke="var(--setup-line)"/>
+            <path d="M160 150v70" stroke="var(--setup-line)" stroke-width="2"/>
+            <path d="M42 168h96M42 184h96M42 200h80M182 168h96M182 184h96M182 200h80" stroke="var(--setup-line-soft)" stroke-width="4" stroke-linecap="round"/>
+            <rect x="118" y="34" width="84" height="116" rx="16" fill="var(--setup-phone)" stroke="var(--setup-phone-line)" stroke-width="2"/>
+            <rect x="128" y="48" width="64" height="82" rx="6" fill="var(--setup-screen)"/>
+            <path d="M136 56v66M192 56v66" stroke="var(--setup-corner)" stroke-width="2.5" stroke-dasharray="5 5"/>
+            <circle cx="160" cy="141" r="3.5" fill="var(--setup-phone-line)"/>
+            <path d="M92 104c-8 0-14 6-14 14s6 14 14 14M228 104c8 0 14 6 14 14s-14 14-14 14" fill="none" stroke="var(--jade)" stroke-width="2" stroke-dasharray="4 4"/>
+            <path d="M160 10v14M153 17l7 7 7-7" stroke="var(--jade)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="voice-card" aria-live="off">
+          <span class="pulse" aria-hidden="true"></span>
+          <div class="voice-copy"><strong id="setupStatus">准备好了就告诉我</strong><p id="setupLine">摆好书后，按下面的按钮，或说“好了”。</p></div>
+        </div>
+
+        <div class="actions actions--stack">
+          <button class="btn btn--primary btn--lg" type="button" data-action="start-auto-scan">放好书，自动开始读</button>
+          <button class="btn btn--secondary" type="button" data-action="open-camera">我已摆好，开始检查画面</button>
+          <button class="btn btn--ghost" type="button" data-action="repeat-hint">
+            <svg class="icon" aria-hidden="true"><use href="#i-volume"/></svg>再说一次提示
+          </button>
+          <button class="btn btn--ghost" type="button" data-action="demo-reading">先体验演示阅读</button>
+        </div>
+
+        <p class="fineprint">「放好书，自动开始读」会打开连续自动扫描：不用拍照、不用点下一步，翻页后会自动识别并接着朗读。</p>
+
+        <details class="details" open>
+          <summary>摆放要点</summary>
+          <ul class="step-list step-list--flat">
+            <li><span>1</span><div><strong>固定手机</strong><p>用支架或书夹固定，镜头与书页平行。</p></div></li>
+            <li><span>2</span><div><strong>整页入镜</strong><p>页边和四个角都在画面内，避免手指遮挡。</p></div></li>
+            <li><span>3</span><div><strong>光线均匀</strong><p>避开反光和阴影，文字越清楚识别越准。</p></div></li>
+          </ul>
+        </details>
+      </section>
+
+      <!-- 扫描 -->
+      <section id="screen-scan" class="screen screen--full" data-route="scan" aria-labelledby="scanTitle" hidden>
+        <div class="screen-head">
+          <div>
+            <p class="step-chip">第二步 · 扫描</p>
+            <h1 id="scanTitle">扫描书页</h1>
+            <p class="lead" id="scanHint">保持手机稳定，我会检查画面并识别文字。</p>
+          </div>
+          <button class="btn btn--ghost btn--icon" type="button" data-action="back" aria-label="返回">
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+          </button>
+        </div>
+
+        <div class="card auto-scan-card" id="autoScanCard">
+          <div class="auto-scan-head">
+            <div class="auto-scan-copy">
+              <strong id="autoScanTitle">连续自动扫描（免按键）</strong>
+              <span id="autoScanHint" class="fineprint">把书放好就行：我会一直看画面，翻页就自动识别、自动朗读，不用按任何按钮。</span>
+            </div>
+            <button id="autoScanToggle" class="switch" type="button" role="switch" aria-checked="false" aria-label="连续自动扫描" data-action="toggle-auto"><span></span></button>
+          </div>
+          <div id="autoScanStatus" class="auto-scan-status" aria-live="polite" hidden>
+            <span class="sweep" aria-hidden="true"></span>
+            <span id="autoScanText">正在自动识别…</span>
+            <button class="btn btn--ghost btn--sm" type="button" data-action="stop-auto">停止</button>
+          </div>
+        </div>
+
+        <div class="camera-shell" id="cameraShell">
+          <video id="camera" autoplay playsinline muted aria-label="书页摄像头画面"></video>
+          <img id="photoPreview" alt="刚刚拍摄的书页照片" hidden>
+          <div class="camera-grid" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          <div id="cameraPlaceholder" class="camera-placeholder">
+            <svg class="icon camera-placeholder-icon" aria-hidden="true"><use href="#i-camera"/></svg>
+            <p>相机画面会显示在这里</p>
+            <button class="btn btn--secondary" type="button" data-action="open-camera">开启相机</button>
+          </div>
+          <div class="camera-toolbar">
+            <button id="torchBtn" class="camera-tool" type="button" aria-pressed="false" hidden>
+              <svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg><span>补光</span>
+            </button>
+            <span id="cameraMode" class="camera-mode">单页模式</span>
+          </div>
+        </div>
+
+        <div id="scanStatusCard" class="scan-status" role="group" aria-label="扫描状态">
+          <div class="scan-status-head">
+            <span id="scanStatusText">等待拍照或选择照片</span>
+            <span id="scanStatusPercent" class="muted"></span>
+          </div>
+          <div class="scan-progress" aria-hidden="true"><span id="scanProgress"></span></div>
+          <p id="cameraMessage" class="scan-hint">照片只在本机识别，不会上传云端。</p>
+        </div>
+
+        <div class="actions actions--stack scan-actions">
+          <button id="captureBtn" class="btn btn--primary btn--lg" type="button" data-action="capture">
+            <svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg><span id="captureLabel">拍照并识别</span>
+          </button>
+          <button id="retakeBtn" class="btn btn--ghost" type="button" data-action="retake" hidden>
+            <svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>重新拍摄
+          </button>
+          <button class="btn btn--secondary btn--lg" type="button" data-action="gallery">
+            <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>从相册选择照片
+          </button>
+          <input id="galleryInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden>
+        </div>
+
+        <details class="details scan-settings" id="scanSettings" open>
+          <summary>
+            <span>扫描设置</span>
+            <span id="scanSettingsSummary" class="scan-settings-summary">选择书籍与页码</span>
+          </summary>
+          <form id="scanForm" class="form scan-form" novalidate>
+            <div class="field">
+              <label for="bookSelect">书籍</label>
+              <select id="bookSelect">
+                <option value="">＋ 新建一本书</option>
+              </select>
+            </div>
+            <div id="newBookFields" class="field-row">
+              <div class="field">
+                <label for="newBookTitle">新书名（可选）</label>
+                <input id="newBookTitle" type="text" placeholder="留空自动命名为《我的书》" autocomplete="off" maxlength="120">
+              </div>
+              <div class="field">
+                <label for="newBookAuthor">作者（可选）</label>
+                <input id="newBookAuthor" type="text" placeholder="梭罗" autocomplete="off" maxlength="80">
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="pageNumber">页码</label>
+                <div class="stepper">
+                  <button type="button" class="stepper-btn" data-action="page-minus" aria-label="页码减一"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+                  <input id="pageNumber" type="number" inputmode="numeric" min="1" max="99999" value="1" aria-label="页码">
+                  <button type="button" class="stepper-btn" data-action="page-plus" aria-label="页码加一"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+                </div>
+              </div>
+              <div class="field">
+                <label for="rotationSelect">照片方向</label>
+                <select id="rotationSelect">
+                  <option value="0">正常</option>
+                  <option value="90">顺时针 90°</option>
+                  <option value="180">顺时针 180°</option>
+                  <option value="270">顺时针 270°</option>
+                </select>
+              </div>
+            </div>
+
+            <fieldset class="field">
+              <legend>页面布局</legend>
+              <div class="segmented" role="radiogroup" aria-label="页面布局" id="layoutGroup">
+                <button type="button" role="radio" aria-checked="true" data-value="none">单页</button>
+                <button type="button" role="radio" aria-checked="false" data-value="pages">左右双页</button>
+                <button type="button" role="radio" aria-checked="false" data-value="columns">左右双栏</button>
+              </div>
+            </fieldset>
+
+            <div class="field" id="splitField" hidden>
+              <label for="splitPosition">分割线位置 <output id="splitValue" class="muted">50%</output></label>
+              <input id="splitPosition" type="range" min="0.2" max="0.8" step="0.01" value="0.5" aria-label="分割线位置">
+            </div>
+            <button class="btn btn--ghost" type="button" data-action="demo-reading">用演示内容继续</button>
+          </form>
+        </details>
+
+        <details class="details">
+          <summary>拍照小贴士</summary>
+          <ul>
+            <li>让书页占满取景框，四个角都露出来。</li>
+            <li>双页书选“左右双页”，分栏杂志选“左右双栏”。</li>
+            <li>识别结果不理想时，可重新拍摄，或从相册选更清楚的照片。</li>
+          </ul>
+        </details>
+      </section>
+
+      <!-- 识别结果 -->
+      <section id="screen-review" class="screen" data-route="review" aria-labelledby="reviewTitle" hidden>
+        <p class="step-chip">第三步 · 确认</p>
+        <h1 id="reviewTitle">识别完成</h1>
+        <p class="lead" id="reviewLead">先确认文字是否清楚，再开始逐行阅读。</p>
+
+        <div class="review-card card">
+          <div class="review-media">
+            <img id="reviewImage" alt="识别后的书页预览" hidden>
+            <div id="reviewImageFallback" class="review-fallback" aria-hidden="true">
+              <svg class="icon"><use href="#i-book-open"/></svg>
+            </div>
+            <span id="reviewBadge" class="badge">识别清晰</span>
+          </div>
+          <div class="review-meta">
+            <div><span class="muted">书籍</span><strong id="reviewBook">示例书籍</strong></div>
+            <div><span class="muted">页码</span><strong id="reviewPage">第 12 页</strong></div>
+            <div><span class="muted">文字行</span><strong id="reviewLines">6 行</strong></div>
+            <div><span class="muted">平均置信度</span><strong id="reviewConfidence">98%</strong></div>
+          </div>
+        </div>
+
+        <div class="actions actions--stack">
+          <button class="btn btn--primary btn--lg" type="button" data-action="start-reading">
+            <svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>开始阅读
+          </button>
+          <button class="btn btn--secondary" type="button" data-action="rescan">
+            <svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>重新扫描这一页
+          </button>
+          <button class="btn btn--ghost btn--danger" type="button" data-action="delete-page">删除这一页</button>
+        </div>
+
+        <div id="reviewWarnings" class="warnings" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+          <ul id="reviewWarningList"></ul>
+        </div>
+
+        <div class="card preview-card">
+          <div class="preview-head"><span>识别文字预览</span><span id="previewCount" class="muted"></span></div>
+          <ol id="reviewText" class="preview-text"></ol>
+        </div>
+      </section>
+
+      <!-- 阅读 -->
+      <section id="screen-reading" class="screen screen--reader" data-route="reading" aria-labelledby="readingTitle" hidden>
+        <div class="reading-head">
+          <button class="btn btn--ghost btn--icon" type="button" data-action="back" aria-label="返回上一页">
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+          </button>
+          <div class="reading-head-copy">
+            <strong id="readingBook">示例书籍</strong>
+            <span id="readingPage">第 12 页 · 第 1 行</span>
+          </div>
+          <button class="btn btn--ghost btn--icon" type="button" data-action="open-note" aria-label="添加批注">
+            <svg class="icon" aria-hidden="true"><use href="#i-note"/></svg>
+          </button>
+        </div>
+
+        <h1 id="readingTitle" class="sr-only">纸书阅读</h1>
+
+        <video id="autoCamera" class="auto-camera" autoplay playsinline muted aria-hidden="true"></video>
+        <div id="autoBadge" class="auto-badge" hidden>
+          <span class="sweep" aria-hidden="true"></span>
+          <span id="autoBadgeText">自动扫描中 · 翻页就会自动读</span>
+          <button class="btn btn--ghost btn--sm" type="button" data-action="stop-auto">停止</button>
+        </div>
+
+        <div class="reading-progress" aria-hidden="true"><span id="readingProgress"></span></div>
+
+        <div class="voice-card voice-card--compact" aria-live="off">
+          <span class="pulse" aria-hidden="true"></span>
+          <div class="voice-copy"><strong id="readStatus">准备朗读</strong><p id="readLine">按“开始朗读”，或直接点一行文字。</p></div>
+        </div>
+
+        <article class="reader-card" aria-label="书页文字">
+          <div class="reader-card-head">
+            <span id="readingLineLabel">第 1 / 6 行</span>
+            <span class="reader-badges">
+              <span id="textModeBadge" class="badge badge--soft" hidden>繁体</span>
+              <span id="readingSource" class="badge badge--soft">扫描文字</span>
+            </span>
+          </div>
+          <div id="readingText" class="reader-text"></div>
+        </article>
+
+        <div id="pageTranslation" class="page-translation" hidden>
+          <strong>本页译文</strong>
+          <p id="pageTranslationText"></p>
+        </div>
+
+        <div class="playback">
+          <button id="prevLineBtn" class="playback-side" type="button" data-action="previous">
+            <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg><span>上一行</span>
+          </button>
+          <button id="playBtn" class="play-btn" type="button" data-action="speak" aria-label="开始朗读当前行">
+            <svg id="playIcon" class="icon play-icon" aria-hidden="true"><use href="#i-play"/></svg>
+            <span id="playLabel">朗读</span>
+          </button>
+          <button id="nextLineBtn" class="playback-side" type="button" data-action="next">
+            <span>下一行</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+        </div>
+
+        <div class="reader-tools">
+          <div class="speed-control" role="group" aria-label="朗读速度">
+            <button type="button" class="tool-btn" data-action="speed-down" aria-label="慢一点"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+            <span id="speedValue" aria-live="polite">1.0×</span>
+            <button type="button" class="tool-btn" data-action="speed-up" aria-label="快一点"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          </div>
+          <div class="reader-mode-wrap">
+            <span class="tool-caption">阅读模式</span>
+            <div class="segmented segmented--compact" role="radiogroup" aria-label="阅读模式" data-setting-group="reading_mode">
+              <button type="button" role="radio" data-value="manual" aria-checked="true">手动</button>
+              <button type="button" role="radio" data-value="page" aria-checked="false">整页</button>
+              <button type="button" role="radio" data-value="overnight" aria-checked="false">整夜</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="fineprint reader-save-note">进度自动保存到本机。来电或切到后台会暂停，回来后按朗读从当前行继续。</p>
+
+        <div class="page-nav">
+          <button id="prevPageBtn" class="btn btn--secondary" type="button" data-action="previous-page">
+            <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg>上一页
+          </button>
+          <button id="nextPageBtn" class="btn btn--secondary" type="button" data-action="next-page">
+            下一页<svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+        </div>
+
+        <div class="actions actions--stack">
+          <button class="btn btn--primary btn--lg" type="button" data-action="open-note">
+            <svg class="icon" aria-hidden="true"><use href="#i-note"/></svg>在这里添加批注
+          </button>
+          <button class="btn btn--secondary" type="button" data-action="scan-next">
+            <svg class="icon" aria-hidden="true"><use href="#i-scan"/></svg>扫描下一页
+          </button>
+        </div>
+
+        <details class="details">
+          <summary>阅读时可以这样说</summary>
+          <p>“下一行”“上一行”“暂停”“继续”“快一点”“慢一点”“添加批注”“下一页”“返回”。按下顶部的麦克风按钮即可说，也可以使用键盘方向键和空格。</p>
+        </details>
+      </section>
+
+      <!-- 批注 -->
+      <section id="screen-annotate" class="screen" data-route="annotate" aria-labelledby="annotateTitle" hidden>
+        <div class="screen-head">
+          <div>
+            <p class="step-chip">批注</p>
+            <h1 id="annotateTitle">记下你的想法</h1>
+            <p class="lead" id="annotateContext">将关联当前书页与行。</p>
+          </div>
+          <button class="btn btn--ghost btn--icon" type="button" data-action="cancel-note" aria-label="取消">
+            <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+          </button>
+        </div>
+
+        <div class="segmented segmented--wide" role="radiogroup" aria-label="批注范围" id="scopeGroup">
+          <button type="button" role="radio" aria-checked="true" data-value="line">当前这一行</button>
+          <button type="button" role="radio" aria-checked="false" data-value="page">整页</button>
+        </div>
+
+        <div class="voice-card" aria-live="off">
+          <span class="pulse" aria-hidden="true"></span>
+          <div class="voice-copy"><strong id="recordStatus">准备聆听</strong><p id="recordHint">按“开始说话”说出批注，也可以直接打字。</p></div>
+        </div>
+
+        <div class="field">
+          <label for="annotationText">批注内容</label>
+          <textarea id="annotationText" rows="4" placeholder="例如：这段让我想到，笔记是把想法留下来的方式。" maxlength="4000" autocomplete="off"></textarea>
+          <div class="field-foot"><span id="charCount" class="muted">0 / 4000</span></div>
+        </div>
+
+        <div class="actions actions--stack">
+          <button class="btn btn--primary btn--lg" type="button" data-action="listen-note">
+            <svg class="icon" aria-hidden="true"><use href="#i-mic"/></svg><span id="listenNoteLabel">开始说话</span>
+          </button>
+          <button class="btn btn--secondary btn--lg" type="button" data-action="save-note">
+            <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>确认并保存
+          </button>
+          <button class="btn btn--ghost" type="button" data-action="cancel-note">取消</button>
+        </div>
+      </section>
+
+      <!-- 批注库 -->
+      <section id="screen-notes" class="screen" data-route="notes" aria-labelledby="notesTitle" hidden>
+        <div class="screen-head">
+          <div>
+            <p class="step-chip">阅读记录</p>
+            <h1 id="notesTitle">我的批注</h1>
+            <p class="lead" id="notesLead" aria-live="polite">按书籍、页码或内容查找，可以回听、补充和编辑。</p>
+          </div>
+          <span id="notesCount" class="badge badge--soft">0 条</span>
+        </div>
+
+        <div class="search-field">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <input id="noteSearch" type="search" placeholder="搜索书名、页码或批注内容" aria-label="搜索批注" autocomplete="off">
+        </div>
+
+        <div class="segmented segmented--wide" role="radiogroup" aria-label="按范围筛选" id="noteFilter">
+          <button type="button" role="radio" aria-checked="true" data-value="all">全部</button>
+          <button type="button" role="radio" aria-checked="false" data-value="line">行批注</button>
+          <button type="button" role="radio" aria-checked="false" data-value="page">整页批注</button>
+        </div>
+
+        <div id="notesList" class="note-list"></div>
+
+        <div id="notesEmpty" class="empty-state" hidden>
+          <span class="empty-icon" aria-hidden="true"><svg class="icon"><use href="#i-note"/></svg></span>
+          <h2>还没有批注</h2>
+          <p>阅读时按“添加批注”，说出的想法会记在对应的行。</p>
+          <button class="btn btn--primary" type="button" data-action="back-reading">回到阅读</button>
+        </div>
+      </section>
+
+      <!-- 设置 -->
+      <section id="screen-settings" class="screen" data-route="settings" aria-labelledby="settingsTitle" hidden>
+        <p class="step-chip">设置</p>
+        <h1 id="settingsTitle">按你的方式读</h1>
+        <p class="lead">所有设置保存在本机，可随时导出。</p>
+
+        <section class="settings-group" aria-labelledby="settingsReader">
+          <h2 id="settingsReader">阅读者</h2>
+          <div class="field-row field-row--tight">
+            <div class="field">
+              <label for="readerName">称呼</label>
+              <input id="readerName" type="text" maxlength="40" autocomplete="nickname" placeholder="我">
+            </div>
+            <button id="saveNameBtn" class="btn btn--secondary" type="button">保存</button>
+          </div>
+        </section>
+
+        <section class="settings-group" aria-labelledby="settingsInteraction">
+          <h2 id="settingsInteraction">交互</h2>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">交互模式</span><span class="setting-desc">引导式提示，或直接说指令</span></div>
+            <div class="segmented segmented--compact" role="radiogroup" aria-label="交互模式" data-setting-group="interaction_mode">
+              <button type="button" role="radio" data-value="guided" aria-checked="true">引导</button>
+              <button type="button" role="radio" data-value="command" aria-checked="false">指令</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">免按键聆听</span><span class="setting-desc">提示结束后自动开始听“好了”</span></div>
+            <button class="switch" type="button" role="switch" aria-checked="false" data-setting="always_listen"><span></span></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">读屏模式</span><span class="setting-desc">关闭应用朗读，交给系统读屏播报</span></div>
+            <button class="switch" type="button" role="switch" aria-checked="false" data-setting="screen_reader_mode"><span></span></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">提示详细度</span><span class="setting-desc">语音提示说多少</span></div>
+            <select class="select select--compact" data-setting="verbosity" aria-label="提示详细度">
+              <option value="brief">简洁</option>
+              <option value="standard">标准</option>
+              <option value="detailed">详细</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="settings-group" aria-labelledby="settingsVoice">
+          <h2 id="settingsVoice">语音</h2>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">语音提示</span><span class="setting-desc">朗读状态、引导和错误说明</span></div>
+            <button class="switch" type="button" role="switch" aria-checked="true" data-setting="voice_enabled"><span></span></button>
+          </div>
+          <div class="setting-row setting-row--stack">
+            <div class="setting-copy"><span class="setting-title">朗读速度</span><span class="setting-desc">影响正文与提示语速</span></div>
+            <div class="range-row">
+              <input type="range" min="0.5" max="2" step="0.05" value="1" data-setting="voice_rate" aria-label="朗读速度">
+              <output id="voiceRateOut">1.0×</output>
+            </div>
+          </div>
+          <div class="setting-row setting-row--stack">
+            <div class="setting-copy"><span class="setting-title">朗读音高</span><span class="setting-desc">让声音更柔和或更低</span></div>
+            <div class="range-row">
+              <input type="range" min="0.5" max="2" step="0.05" value="1" data-setting="voice_pitch" aria-label="朗读音高">
+              <output id="voicePitchOut">1.0</output>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-group" aria-labelledby="settingsDisplay">
+          <h2 id="settingsDisplay">显示与阅读</h2>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">外观</span><span class="setting-desc">跟随系统、浅色或深色</span></div>
+            <div class="segmented segmented--compact" role="radiogroup" aria-label="外观" data-setting-group="theme">
+              <button type="button" role="radio" data-value="auto" aria-checked="true">跟随</button>
+              <button type="button" role="radio" data-value="light" aria-checked="false">浅色</button>
+              <button type="button" role="radio" data-value="dark" aria-checked="false">深色</button>
+            </div>
+          </div>
+          <div class="setting-row setting-row--stack">
+            <div class="setting-copy"><span class="setting-title">字号</span><span class="setting-desc">正文与界面的整体缩放</span></div>
+            <div class="range-row">
+              <input type="range" min="0.85" max="1.6" step="0.05" value="1" data-setting="font_scale" aria-label="字号">
+              <output id="fontScaleOut">100%</output>
+            </div>
+          </div>
+          <div class="setting-row setting-row--stack">
+            <div class="setting-copy"><span class="setting-title">阅读模式</span><span class="setting-desc">手动点读、读完本页自动停，或整夜跨页连续</span></div>
+            <div class="segmented segmented--wide" role="radiogroup" aria-label="阅读模式" data-setting-group="reading_mode">
+              <button type="button" role="radio" data-value="manual" aria-checked="true">手动点读</button>
+              <button type="button" role="radio" data-value="page" aria-checked="false">整页连续</button>
+              <button type="button" role="radio" data-value="overnight" aria-checked="false">整夜阅读</button>
+            </div>
+          </div>
+          <div class="setting-row setting-row--stack">
+            <div class="setting-copy"><span class="setting-title">自动翻行等待</span><span class="setting-desc">每行结束后停顿的秒数</span></div>
+            <div class="range-row">
+              <input type="range" min="0.5" max="10" step="0.5" value="2.5" data-setting="auto_advance_delay" aria-label="自动翻行等待秒数">
+              <output id="autoDelayOut">2.5 秒</output>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">高对比度</span><span class="setting-desc">加深文字与边框的对比</span></div>
+            <button class="switch" type="button" role="switch" aria-checked="false" data-setting="high_contrast"><span></span></button>
+          </div>
+        </section>
+
+        <section class="settings-group" aria-labelledby="settingsLanguage">
+          <h2 id="settingsLanguage">文字与翻译</h2>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">文字版本</span><span class="setting-desc">扫描文字按简体或繁体显示和朗读</span></div>
+            <div class="segmented segmented--compact" role="radiogroup" aria-label="文字版本" data-setting-group="text_script">
+              <button type="button" role="radio" data-value="simplified" aria-checked="true">简体</button>
+              <button type="button" role="radio" data-value="traditional" aria-checked="false">繁体</button>
+            </div>
+          </div>
+          <div class="setting-row setting-row--stack">
+            <div class="setting-copy"><span class="setting-title">翻译</span><span class="setting-desc">可选显示译文；只发送当前页文字到在线翻译，需要联网</span></div>
+            <div class="segmented segmented--wide" role="radiogroup" aria-label="翻译方向" data-setting-group="translation_target">
+              <button type="button" role="radio" data-value="off" aria-checked="true">不翻译</button>
+              <button type="button" role="radio" data-value="en" aria-checked="false">中文→英文</button>
+              <button type="button" role="radio" data-value="zh" aria-checked="false">英文→中文</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-copy"><span class="setting-title">朗读译文</span><span class="setting-desc">开启后朗读英文译文，而不是原文</span></div>
+            <button class="switch" type="button" role="switch" aria-checked="false" data-setting="speak_translation"><span></span></button>
+          </div>
+          <p class="fineprint">译文由在线翻译服务生成，只在选择翻译时发送当前页文字；关闭翻译后不会联网。翻译不可用时仍可阅读原文。</p>
+        </section>
+
+        <section class="settings-group" aria-labelledby="settingsDevices">
+          <h2 id="settingsDevices">设备与手机</h2>
+          <button class="nav-row" type="button" data-action="open-devices">
+            <span class="nav-row-icon"><svg class="icon" aria-hidden="true"><use href="#i-keyboard"/></svg></span>
+            <span class="nav-row-copy"><strong>蓝牙、键盘与手柄</strong><span id="deviceSummary">连接蓝牙翻页器、键盘或手柄</span></span>
+            <svg class="icon nav-row-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+          <button class="nav-row" type="button" data-action="open-phone">
+            <span class="nav-row-icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+            <span class="nav-row-copy"><strong>用手机打开</strong><span id="phoneSummary">扫码连接手机；相机需要 HTTPS</span></span>
+            <svg class="icon nav-row-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+        </section>
+
+        <section class="settings-group" aria-labelledby="settingsData">
+          <h2 id="settingsData">数据</h2>
+          <button class="nav-row" type="button" data-action="export" id="exportBtn">
+            <span class="nav-row-icon"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg></span>
+            <span class="nav-row-copy"><strong>导出备份</strong><span>包含书籍、书页文字、批注和设置</span></span>
+            <svg class="icon nav-row-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+          <button class="nav-row" type="button" data-action="import" id="importBtn">
+            <span class="nav-row-icon"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg></span>
+            <span class="nav-row-copy"><strong>导入备份</strong><span>合并到当前书架，或整体替换</span></span>
+            <svg class="icon nav-row-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+          <input id="importInput" type="file" accept="application/json,.json" hidden>
+          <button class="nav-row nav-row--danger" type="button" data-action="clear-data">
+            <span class="nav-row-icon"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg></span>
+            <span class="nav-row-copy"><strong>清除所有数据</strong><span>删除书籍、书页与批注，保留设置</span></span>
+            <svg class="icon nav-row-arrow" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+          </button>
+        </section>
+
+        <section class="settings-group" aria-labelledby="settingsAbout">
+          <h2 id="settingsAbout">关于纸伴</h2>
+          <dl class="about-list">
+            <div><dt>版本</dt><dd id="aboutVersion">1.0.0</dd></div>
+            <div><dt>识别引擎</dt><dd id="aboutOcr">检查中</dd></div>
+            <div><dt>数据位置</dt><dd>本机 data 目录</dd></div>
+            <div><dt>连接方式</dt><dd id="aboutSecure">检查中</dd></div>
+          </dl>
+          <div class="actions actions--grid">
+            <button class="btn btn--secondary" type="button" data-action="ocr-selftest">自检识别引擎</button>
+            <button class="btn btn--ghost" type="button" data-action="run-diagnostics">环境诊断</button>
+          </div>
+          <div class="field-row field-row--tight">
+            <div class="field">
+              <label for="tokenInput">访问令牌（局域网用，可选）</label>
+              <input id="tokenInput" type="text" autocomplete="off" placeholder="没设置就留空" aria-describedby="tokenHint">
+            </div>
+            <button class="btn btn--secondary" type="button" data-action="save-token">保存</button>
+          </div>
+          <p id="tokenHint" class="fineprint">电脑上以 <code>PAPERPAL_TOKEN=口令</code> 启动时可以在这里填入同一个口令；同一局域网里的其他人就打不开你的数据。</p>
+          <p id="diagnosticsOut" class="fineprint" aria-live="polite"></p>
+          <p class="fineprint">纸伴不提供云端账号，不收集阅读内容。相机画面只在本机处理；批注和阅读进度保存在本机数据库，可通过导出备份迁移。</p>
+        </section>
+      </section>
+
+      <!-- 设备 -->
+      <section id="screen-devices" class="screen" data-route="devices" aria-labelledby="devicesTitle" hidden>
+        <div class="screen-head">
+          <div>
+            <p class="step-chip">输入方式</p>
+            <h1 id="devicesTitle">蓝牙、键盘与手柄</h1>
+            <p class="lead">连接翻页器或遥控器，不碰屏幕也能翻行和暂停。</p>
+          </div>
+          <button class="btn btn--ghost btn--icon" type="button" data-action="back" aria-label="返回设置">
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+          </button>
+        </div>
+
+        <div class="device-status card" id="bleCard">
+          <div class="device-status-row">
+            <span class="device-icon"><svg class="icon" aria-hidden="true"><use href="#i-bluetooth"/></svg></span>
+            <div><strong id="bleState">未连接 Web Bluetooth 设备</strong><span id="bleHint">耳机和大多数翻页器不走网页蓝牙，请用下面的“系统配对”。</span></div>
+            <span id="bleDot" class="status-dot" aria-hidden="true"></span>
+          </div>
+          <div id="bleDetail" class="ble-detail" hidden>
+            <span>昵称 <strong id="bleName">—</strong></span>
+            <span>电量 <strong id="bleBattery">—</strong></span>
+            <span>已学习按键 <strong id="bleLearned">0</strong></span>
+          </div>
+          <div class="ble-nickname">
+            <label for="bleNickname">设备昵称</label>
+            <div class="ble-nickname-row">
+              <input id="bleNickname" type="text" maxlength="40" autocomplete="off" placeholder="例如：我的翻页器">
+              <button class="btn btn--ghost btn--sm" type="button" data-action="ble-save-nickname">保存</button>
+            </div>
+          </div>
+          <div class="device-actions">
+            <button id="bleConnectBtn" class="btn btn--secondary" type="button" data-action="ble-connect">连接 Web Bluetooth 设备</button>
+            <button id="bleDisconnectBtn" class="btn btn--ghost" type="button" data-action="ble-disconnect" hidden>断开</button>
+            <button id="bleLearnBtn" class="btn btn--ghost" type="button" data-action="ble-learn" hidden>学习按键</button>
+          </div>
+          <p id="bleNote" class="fineprint"></p>
+        </div>
+
+        <div class="card pair-guide" id="pairGuideCard">
+          <h2 id="pairGuideTitle">系统配对：耳机 / 翻页器这样连</h2>
+          <ol class="step-list step-list--flat" id="pairSteps">
+            <li><span>1</span><div><strong>在系统里配对</strong><p>手机：设置 → 蓝牙；电脑：设置 → 蓝牙和设备。让设备进入配对模式，选中它。</p></div></li>
+            <li><span>2</span><div><strong>回来按一下设备上的按键</strong><p>纸伴听到按键就会自动登记，不用在网页里找设备。</p></div></li>
+            <li><span>3</span><div><strong>给它起个名字</strong><p>比如“我的耳机”“桌上的翻页器”，之后所有提示都用这个名字。</p></div></li>
+          </ol>
+          <button class="btn btn--primary" type="button" data-action="start-pairing">我在系统里配对好了，开始侦测按键</button>
+          <p id="pairingHint" class="fineprint" aria-live="polite"></p>
+        </div>
+
+        <div class="device-status card">
+          <div class="device-status-row">
+            <span class="device-icon"><svg class="icon" aria-hidden="true"><use href="#i-volume"/></svg></span>
+            <div><strong id="mediaState">耳机按键未启用</strong><span id="mediaHint">蓝牙耳机的播放 / 暂停键、上一首 / 下一首键可以控制朗读。</span></div>
+            <span id="mediaDot" class="status-dot" aria-hidden="true"></span>
+          </div>
+          <div class="device-actions">
+            <button id="mediaEnableBtn" class="btn btn--secondary" type="button" data-action="media-enable">启用耳机按键</button>
+            <button id="mediaDisableBtn" class="btn btn--ghost" type="button" data-action="media-disable" hidden>关闭耳机按键</button>
+          </div>
+          <p id="mediaNote" class="fineprint">点一次“启用耳机按键”（浏览器要求先有一次点击），之后用耳机上的按键就能翻行、暂停。iPhone 可以在控制中心里确认看到“纸伴”。</p>
+        </div>
+
+        <div class="device-status card">
+          <div class="device-status-row">
+            <span class="device-icon"><svg class="icon" aria-hidden="true"><use href="#i-keyboard"/></svg></span>
+            <div><strong id="keyboardStatus">等待键盘输入</strong><span id="keyboardHint">方向键 ← →、空格，或任意按键都会被识别。</span></div>
+            <span id="keyboardDot" class="status-dot" aria-hidden="true"></span>
+          </div>
+          <div class="device-status-row">
+            <span class="device-icon"><svg class="icon" aria-hidden="true"><use href="#i-gamepad"/></svg></span>
+            <div><strong id="gamepadStatus">未检测到手柄</strong><span id="gamepadName">支持标准游戏手柄与部分蓝牙遥控器。</span></div>
+            <span id="gamepadDot" class="status-dot" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="card" id="deviceRegistryCard">
+          <div class="bench-head">
+            <h2 id="deviceRegistryTitle">已识别的设备</h2>
+            <button class="btn btn--ghost btn--sm" type="button" data-action="clear-devices">清空</button>
+          </div>
+          <ul id="deviceList" class="device-list" aria-live="polite"></ul>
+          <p id="deviceEmpty" class="fineprint">还没有识别到设备。按一下耳机或翻页器上的按键，它就会出现在这里。</p>
+        </div>
+
+        <div class="card input-bench" id="devicePad" tabindex="0" role="group" aria-label="按键测试台：按一下你的蓝牙设备，这里会显示收到的按键">
+          <div class="bench-head">
+            <span class="pad-hint">按键测试台 · 按一下手里的设备</span>
+            <button class="btn btn--ghost btn--sm" type="button" data-action="bench-clear">清空</button>
+          </div>
+          <strong id="lastKey">尚未收到按键</strong>
+          <ol id="inputLog" class="input-log" aria-live="polite" aria-label="最近的按键记录"></ol>
+          <p id="benchTip" class="fineprint">长按 ← 或 → 可以连续翻行，不用一下一下按。</p>
+        </div>
+
+        <div class="actions actions--grid">
+          <button class="btn btn--secondary" type="button" data-action="test-prev">测试：上一行</button>
+          <button class="btn btn--secondary" type="button" data-action="test-next">测试：下一行</button>
+          <button class="btn btn--secondary" type="button" data-action="test-toggle">测试：暂停 / 继续</button>
+          <button class="btn btn--secondary" type="button" data-action="test-note">测试：添加批注</button>
+        </div>
+
+        <h2>默认按键映射</h2>
+        <ul class="mapping-list">
+          <li><kbd>←</kbd><span>上一行（长按连发）</span></li>
+          <li><kbd>→</kbd><span>下一行（长按连发）</span></li>
+          <li><kbd>空格</kbd><span>暂停 / 继续朗读</span></li>
+          <li><kbd>N</kbd><span>添加批注</span></li>
+          <li><kbd>Esc</kbd><span>返回</span></li>
+          <li><kbd>⏯</kbd><span>耳机播放 / 暂停键：暂停或继续</span></li>
+          <li><kbd>⏭</kbd><span>耳机下一首键：下一行</span></li>
+          <li><kbd>⏮</kbd><span>耳机上一首键：上一行</span></li>
+        </ul>
+        <p class="fineprint" id="deviceCompatibility">iPhone / iPad 的 Safari 不支持网页蓝牙，无法读取自定义蓝牙按钮的昵称。请把翻页器或蓝牙键盘作为系统蓝牙键盘配对；配对后方向键、空格和媒体键可直接翻行。Android 与桌面 Edge/Chrome 支持 Web Bluetooth 的机型可以连接并显示设备昵称。</p>
+      </section>
+
+      <!-- 手机连接 -->
+      <section id="screen-phone" class="screen" data-route="phone" aria-labelledby="phoneTitle" hidden>
+        <div class="screen-head">
+          <div>
+            <p class="step-chip">手机</p>
+            <h1 id="phoneTitle">用手机打开纸伴</h1>
+            <p class="lead">手机和电脑连同一个 Wi-Fi，扫码就能打开；装一次证书后，相机和主屏幕图标都能用。</p>
+          </div>
+          <button class="btn btn--ghost btn--icon" type="button" data-action="back" aria-label="返回">
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+          </button>
+        </div>
+
+        <div id="phoneMode" class="phone-mode" hidden></div>
+
+        <div class="card qr-card">
+          <div id="phoneQr" class="qr-box" aria-label="扫这个二维码，在手机上打开纸伴"></div>
+          <p class="qr-url"><code id="phoneUrl">正在检查本机地址…</code></p>
+          <div class="actions actions--grid">
+            <button class="btn btn--primary" type="button" data-action="copy-phone-url">复制网址</button>
+            <button class="btn btn--secondary" type="button" data-action="install-profile">下载证书描述文件</button>
+          </div>
+          <p id="phoneStatus" class="fineprint" aria-live="polite">正在读取本机服务信息…</p>
+        </div>
+
+        <div class="card" id="phoneChecks" aria-label="连接检查"></div>
+
+        <div class="card" id="phoneTrouble">
+          <div class="bench-head">
+            <h2>手机打不开？按这个顺序查</h2>
+            <button class="btn btn--ghost btn--sm" type="button" data-action="refresh-phone">重新检测</button>
+          </div>
+          <ol class="step-list step-list--flat">
+            <li><span>1</span><div><strong>先试“网络自检”</strong><p id="phoneDiagText">如果自检页能打开，说明网络通，问题在证书；打不开就是防火墙或 Wi-Fi 隔离。</p></div></li>
+            <li><span>2</span><div><strong>确认防火墙已放行</strong><p>双击「启动手机测试.bat」时会弹一次 UAC，点“是”即可放行 8443。</p></div></li>
+            <li><span>3</span><div><strong>关掉电脑上的代理 / VPN</strong><p>Clash 等 TUN 模式会劫持局域网地址，测试前先退出。</p></div></li>
+            <li><span>4</span><div><strong>还是不行：改用公网隧道</strong><p>手机用流量也能打开，不需要证书，也不受校园网隔离影响。</p></div></li>
+          </ol>
+          <div class="actions actions--grid">
+            <button class="btn btn--secondary" type="button" data-action="open-diagnostic" id="diagnosticBtn" hidden>打开网络自检</button>
+            <button class="btn btn--primary" type="button" data-action="tunnel-help">怎么用公网隧道</button>
+          </div>
+        </div>
+
+        <h2>手机上的步骤</h2>
+        <ol id="phoneSteps" class="step-list step-list--flat"></ol>
+
+        <div class="card">
+          <h3>蓝牙耳机怎么测</h3>
+          <p class="fineprint">耳机通过系统蓝牙连接即可，不需要在纸伴里配对。打开阅读页后，点一次“启用耳机按键”，再用耳机上的播放 / 暂停或下一首键试一下。</p>
+          <div class="actions actions--grid">
+            <button class="btn btn--secondary" type="button" data-action="open-devices">打开设备测试台</button>
+            <button class="btn btn--ghost" type="button" data-action="copy-troubleshoot">复制排障清单</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="主要页面">
+      <button type="button" data-route="welcome" aria-label="首页">
+        <svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>首页</span>
+      </button>
+      <button type="button" data-route="library" aria-label="书架">
+        <svg class="icon" aria-hidden="true"><use href="#i-library"/></svg><span>书架</span>
+      </button>
+      <button type="button" data-route="reading" aria-label="阅读">
+        <svg class="icon" aria-hidden="true"><use href="#i-book-open"/></svg><span>阅读</span>
+      </button>
+      <button type="button" data-route="notes" aria-label="批注">
+        <svg class="icon" aria-hidden="true"><use href="#i-note"/></svg><span>批注</span>
+      </button>
+      <button type="button" data-route="settings" aria-label="设置">
+        <svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span>设置</span>
+      </button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>
+    <span id="toastText"></span>
+  </div>
+  <div id="srStatus" class="sr-only" role="status" aria-live="polite"></div>
+
+  <dialog id="dialog" class="dialog" aria-labelledby="dialogTitle">
+    <div class="dialog-inner">
+      <h2 id="dialogTitle">确认</h2>
+      <div id="dialogBody" class="dialog-body"></div>
+      <div class="dialog-actions">
+        <button id="dialogCancel" class="btn btn--secondary" type="button" value="cancel">取消</button>
+        <button id="dialogConfirm" class="btn btn--primary" type="button" value="confirm">确认</button>
+      </div>
+    </div>
+  </dialog>
+
+  <noscript><p class="noscript">纸伴需要 JavaScript 才能朗读和识别书页，请在浏览器中启用。</p></noscript>
+  <script type="module" src="/app-assets/js/app.js"></script>
+</body>
+</html>

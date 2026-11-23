@@ -1,0 +1,3 @@
+-r requirements.txt
+# 默认使用系统 Edge/Chrome 的独立应用窗口，无需额外 Python 依赖。
+# 如需 pywebview 原生窗口（可选）：pip install pywebview

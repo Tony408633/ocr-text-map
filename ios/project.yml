@@ -1,0 +1,34 @@
+name: PaperPal
+options:
+  bundleIdPrefix: local.paperpal
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""          # 在 Xcode 里选你自己的 Team
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  PaperPal:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: PaperPal
+        excludes:
+          - "Info.plist"
+    info:
+      path: PaperPal/Info.plist
+      properties:
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: local.paperpal.app
+        TARGETED_DEVICE_FAMILY: "1"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
