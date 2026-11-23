@@ -32,3 +32,24 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         ENABLE_USER_SCRIPT_SANDBOXING: YES
+
+  # 网页壳：把现有网页界面装进 iPhone（服务仍然跑在电脑上）
+  PaperPalWeb:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: WebShell
+        excludes:
+          - "Info.plist"
+    info:
+      path: WebShell/Info.plist
+      properties:
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: local.paperpal.web
+        TARGETED_DEVICE_FAMILY: "1"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+
