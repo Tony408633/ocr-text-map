@@ -13,6 +13,28 @@ C 是把识别换成本机 Apple Vision，属于重写，见下面「原生 App�
 
 ---
 
+## 让它“像原生 App”：已经做好的四层
+
+| 层 | 做了什么 | 在哪 |
+| --- | --- | --- |
+| ① 外壳参数 | `display: standalone`、`viewport-fit=cover`、`apple-mobile-web-app-*`、`theme-color`（明/暗）、主屏图标 | `manifest.webmanifest`、`index.html` |
+| ② 去浏览器感 | `overscroll-behavior: none`（无下拉刷新/橡皮筋）、`-webkit-tap-highlight-color: transparent`、界面元素禁止长按选中与系统菜单、按钮 `touch-action: manipulation`（去 300 ms 双击缩放延迟）、`100dvh` + `env(safe-area-inset-*)` 适配刘海与底部横条 | `styles.css` |
+| ③ 交互动感 | **启动画面**（品牌 + 淡出，避免白屏）、触感反馈（`navigator.vibrate` → WebView 里走原生 `UIImpactFeedbackGenerator`）、路由切换动画、`is-standalone` 标记（已装到主屏时隐藏“添加到主屏幕”提示） | `index.html`、`app.js`、`ui.js` |
+| ④ 原生容器 | WKWebView 全屏、无地址栏、无滚动回弹、无滚动条、无链接预览；首启可扫码填地址；底部原生工具条 | `ios/WebShell/` |
+
+### 还差什么才算“完全原生”
+
+| 现象 | 原因 | 解决 |
+| --- | --- | --- |
+| 顶部状态栏样式固定 | 由系统控制，网页只能选 `default / black / black-translucent` | 想要完全自定义就上 WebView 壳或原生 |
+| iOS 上 PWA 没有振动 | Safari 不支持 `navigator.vibrate` | 用 WebView 壳（已接原生触感） |
+| 分享文件、保存到“文件” | WKWebView 的 `navigator.share` 受限 | 需要加原生分享桥（后续） |
+| 上架 App Store / TestFlight | 需要开发者账号 + 原生容器 | 已有 WebShell 可打包 |
+
+
+
+---
+
 ## A. 最快：网页装到主屏幕（不需要 Mac）
 
 1. 电脑双击 **`启动手机隧道.bat`**，得到 `https://xxx.trycloudflare.com`（公网 HTTPS，任意网络可用）。

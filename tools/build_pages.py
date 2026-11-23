@@ -178,11 +178,13 @@ def write_pages_extras() -> None:
 """
     banner = """<div id="pagesBanner" style="position:fixed;left:12px;right:12px;bottom:76px;z-index:9999;
 background:#0f6b58;color:#fff;border-radius:12px;padding:10px 14px;font:14px/1.5 -apple-system,'PingFang SC',sans-serif;
-box-shadow:0 6px 20px rgba(0,0,0,.18);display:flex;gap:10px;align-items:center">
+box-shadow:0 6px 20px rgba(0,0,0,.18);display:none;gap:10px;align-items:center">
   <span style="flex:1">界面演示（无后端）：点首页的「继续上次阅读」或「先体验演示阅读」即可看到阅读效果。</span>
   <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,.18);border:0;color:#fff;
 border-radius:8px;padding:6px 10px;font-size:13px">知道了</button>
-</div>"""
+</div>
+<script>setTimeout(function(){var b=document.getElementById('pagesBanner');if(b)b.style.display='flex';},1600);</script>
+"""
     index = DOCS / "index.html"
     text = index.read_text(encoding="utf-8")
     if "paperpal-demo-offline" not in text:

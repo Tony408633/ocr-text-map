@@ -59,6 +59,11 @@ export function sleep(ms) {
 
 export function vibrate(pattern = 12) {
   try {
+    // 网页壳（WKWebView）里用原生触感，比 navigator.vibrate 更接近 iOS 手感
+    if (window.paperpalNative?.haptic) {
+      window.paperpalNative.haptic();
+      return;
+    }
     if (navigator.vibrate) navigator.vibrate(pattern);
   } catch {
     /* 忽略不支持振动的设备 */

@@ -2219,3 +2219,77 @@ kbd {
 .device-item .btn { min-height: 34px; padding: 5px 10px; font-size: 0.76rem; }
 .pair-guide h2 { font-size: 1rem; margin-bottom: 8px; }
 .pair-guide .btn { width: 100%; }
+
+/* --------------------------------------------------------------------------
+   原生 App 手感：去掉浏览器的“网页痕迹”
+   -------------------------------------------------------------------------- */
+html { overscroll-behavior: none; }
+body { overscroll-behavior-y: none; }
+
+/* 界面元素不允许长按选中 / 弹出系统菜单（正文仍可选中） */
+.app-bar,
+.tabbar,
+.btn,
+.switch,
+.mode-card,
+.nav-row,
+.segmented,
+.stepper,
+.camera-tool,
+.playback,
+.badge,
+.step-chip {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.reader-text,
+.reading-line,
+#readerName,
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* 去掉双击缩放带来的 300ms 延迟与误触 */
+.btn, .switch, .tabbar button, .mode-card, .segmented button,
+.stepper-btn, .nav-row, .reading-line, .voice-card, .resume-card {
+  touch-action: manipulation;
+}
+
+img, video, svg { -webkit-user-drag: none; }
+
+/* 启动画面 */
+.app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  background: var(--bg);
+  transition: opacity 0.26s ease, visibility 0.26s ease;
+}
+.app-splash.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.app-splash-logo {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: var(--jade);
+  color: #fff;
+  font: 700 34px/1 var(--font-display);
+  box-shadow: var(--shadow-md);
+}
+.app-splash-title { font: 700 20px/1.2 var(--font-display); color: var(--ink); }
+.app-splash-tip { font-size: 0.8rem; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .app-splash { transition: none; }
+}
+
+/* 已装到主屏幕（standalone）时隐藏“添加到主屏幕”类提示 */
+html.is-standalone .only-in-browser { display: none !important; }

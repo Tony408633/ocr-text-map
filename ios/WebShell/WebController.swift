@@ -14,6 +14,16 @@ final class WebController: NSObject, ObservableObject {
 
     private let allowSelfSigned: Bool
     private var observations: [NSKeyValueObservation] = []
+    private let haptic = UIImpactFeedbackGenerator(style: .light)
+
+    /// 注入给网页的原生桥：触感反馈（iOS Safari 不支持 navigator.vibrate）
+    private static let bridgeScript = """
+    window.paperpalNative = window.paperpalNative || {
+      haptic: function () {
+        try { window.webkit.messageHandlers.haptic.postMessage("tap"); } catch (e) {}
+      }
+    };
+    """
 
     init(allowSelfSigned: Bool) {
         self.allowSelfSigned = allowSelfSigned
@@ -23,16 +33,29 @@ final class WebController: NSObject, ObservableObject {
         configuration.mediaTypesRequiringUserActionForPlayback = []
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
+        configuration.userContentController.addUserScript(
+            WKUserScript(source: Self.bridgeScript,
+                         injectionTime: .atDocumentStart,
+                         forMainFrameOnly: false)
+        )
 
         webView = WKWebView(frame: .zero, configuration: configuration)
         super.init()
 
+        configuration.userContentController.add(self, name: "haptic")
+
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.allowsBackForwardNavigationGestures = true
+        webView.allowsLinkPreview = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
+        webView.scrollView.bounces = false          // 去掉橡皮筋回弹，更像原生
+        webView.scrollView.alwaysBounceVertical = false
+        webView.scrollView.showsVerticalScrollIndicator = false
         webView.isOpaque = false
         webView.backgroundColor = .systemBackground
+
+        haptic.prepare()
 
         observations = [
             webView.observe(\.estimatedProgress, options: [.new]) { [weak self] view, _ in
@@ -45,6 +68,10 @@ final class WebController: NSObject, ObservableObject {
                 DispatchQueue.main.async { self?.canGoBack = view.canGoBack }
             },
         ]
+    }
+
+    deinit {
+        webView.configuration.userContentController.removeScriptMessageHandler(forName: "haptic")
     }
 
     func load(_ url: URL) {
@@ -141,6 +168,15 @@ extension WebController: WKNavigationDelegate {
         default:
             return error.localizedDescription
         }
+    }
+}
+
+extension WebController: WKScriptMessageHandler {
+    /// 网页通过 window.paperpalNative.haptic() 触发原生触感
+    func userContentController(_ userContentController: WKUserContentController,
+                               didReceive message: WKScriptMessage) {
+        guard message.name == "haptic" else { return }
+        haptic.impactOccurred()
     }
 }
 

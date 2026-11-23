@@ -154,10 +154,28 @@ const saveNotesSearch = debounce(() => {
 }, 160);
 
 /* -------------------------------------------------------------------------- */
+/* 原生 App 外壳：standalone 标记与启动画面                                    */
+/* -------------------------------------------------------------------------- */
+
+const STANDALONE =
+  window.navigator.standalone === true ||
+  window.matchMedia?.("(display-mode: standalone)").matches === true;
+
+function hideSplash() {
+  const splash = document.getElementById("appSplash");
+  if (!splash) return;
+  splash.classList.add("is-hidden");
+  window.setTimeout(() => splash.remove(), 420);
+}
+
+/* -------------------------------------------------------------------------- */
 /* 启动                                                                        */
 /* -------------------------------------------------------------------------- */
 
 async function init() {
+  document.documentElement.classList.toggle("is-standalone", STANDALONE);
+  // 兜底：即使初始化失败，也不要让启动画面一直挂着
+  window.setTimeout(hideSplash, 2600);
   loadCache();
   loadSession();
   applyPreferences();
@@ -172,6 +190,7 @@ async function init() {
   updateOfflineBanner();
   syncSettingsUI();
   renderRoute(currentRoute);
+  requestAnimationFrame(() => window.setTimeout(hideSplash, 120));
   registerServiceWorker();
   initializeInput();
   initializeBluetooth();
